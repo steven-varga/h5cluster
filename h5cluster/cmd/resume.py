@@ -4,7 +4,7 @@ from logging import info, error
 from ..auth.rights import protect
 
 
-@protect('resume:cluster')
+@protect('cluster:resume')
 def subparser(subparsers, completer):
     resume_parser = subparsers.add_parser("resume", help='resuming hibernating/stopped cluster instances')
     resume_parser.add_argument(
@@ -13,7 +13,7 @@ def subparser(subparsers, completer):
     resume_parser.add_argument(
         "--dry-run",  action='store_true', help="do test run, skips instantiating nodes...")
 
-@protect('resume:cluster')
+@protect('cluster:resume')
 def dispatch(**kwargs):
     info('--------------------------------------------------------------------------------')
     info('                          RESUMING H5CLUSTER                                    ')

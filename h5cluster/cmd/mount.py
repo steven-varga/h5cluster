@@ -1,10 +1,11 @@
 # Copyright © <2019-2020> Varga Consulting, Toronto, ON info@vargaconsulting.ca
+
 from inflection import camelize, underscore
 import boto3
 from ..auth.rights import protect
 
 
-@protect('mount:s3')
+@protect('s3:mount')
 def subparser(subparsers, completer):
     parser = subparsers.add_parser("mount", help='mount S3 bucket locally')
     sp = parser.add_subparsers(title='subparser', dest='sub_cmd', help='additional help')
@@ -44,7 +45,7 @@ def subparser(subparsers, completer):
 _dispatch_ = {
 }
 
-@protect('mount:s3')
+@protect('s3:mount')
 def dispatch(**kwargs):
     pass
     #_dispatch_[(kwargs['sub_cmd'])](**kwargs).mount()

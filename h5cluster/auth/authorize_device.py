@@ -1,6 +1,4 @@
-# _____________________________________________________________________________
 # Copyright © <2019-2020> Varga Consulting, Toronto, ON info@vargaconsulting.ca
-# _____________________________________________________________________________
 
 import json
 from logging import info, warning, critical
@@ -21,24 +19,22 @@ import webbrowser
 from pathlib import Path
 import jwt, sys
 
+
+
 class AuthorizeDevice(AuthenticationBase):
     client_id = 'U8UA4KwGmgAYuXv1iww4C4uOuPH9UCH2'
-    audience = 'https://h5cluster/'
-    scope = 'email openid name email profile offline_access'
+    audience = 'https://api.h5cluster.ca/'
+    # the 'cluster:*' scopes are defined in your corporate auth0 H5CLUSTER API
+    # TODO: query permissions from API
+    scope = 'email openid name offline_access \
+        cluster:create cluster:start cluster:stop cluster:terminate cluster:update cluster:login'
     domain = 'h5cluster.us.auth0.com'
     auth_token_file = Path(Path.home(), '.h5cluster.auth')
     algorithm="RS256"
 
-    DISABLE_JWT_CHECKS = {
-        "verify_signature": True,
-        "verify_exp": False,
-        "verify_nbf": False,
-        "verify_iat": False,
-        "verify_aud": False,
-        "verify_iss": False,
-        "require_exp": False,
-        "require_iat": False,
-        "require_nbf": False,
+    JWT_CHECKS = {
+        "verify_signature": True, "verify_exp": True, "verify_nbf": False, "verify_iat": False,
+        "verify_aud": False, "verify_iss": False, "require_exp": False, "require_iat": False, "require_nbf": False,
     } 
 
     def __init__(self): 
@@ -92,44 +88,39 @@ class AuthorizeDevice(AuthenticationBase):
             header = jwt.get_unverified_header(token)
         except jwt.exceptions.DecodeError:
             raise TokenValidationError("ID token could not be decoded.")
-
         alg = header.get('alg', None)
-
         kid = header.get('kid', None)
         secret_or_certificate = self._fetch_key(key_id=kid)
 
         try:
             decoded = jwt.decode(jwt=token, key=secret_or_certificate,
-                                algorithms=[self.algorithm], options=self.DISABLE_JWT_CHECKS)
+                                algorithms=[self.algorithm], options=self.JWT_CHECKS)
         except jwt.exceptions.InvalidSignatureError:
             raise TokenValidationError("Invalid token signature.")
         return decoded    
 
-
     def login(self):
-        jwt_token = None
+        jwt_token, at = None, None
         try:
             with open(self.auth_token_file, 'r') as fd_token:
                 jwt_token = json.load(fd_token)
             self.signature_verifier.verify_signature(jwt_token['access_token'])
+            #at = dict_view(self.decode_token(jwt_token['access_token']))
         except Exception as err:
             jwt_token = self.authorize()
         finally:
             if jwt_token:
                 at = dict_view(self.decode_token(jwt_token['access_token']))
-
                 ut = dict_view(self.get(
                     url='https://{}/userinfo'.format(self.domain),
                     headers={'Authorization': 'Bearer {}'.format(jwt_token['access_token'])}))
                 user = {
-                    'permissions': at.permissions,
-                    'name': ut.name,
+                    'access_token': jwt_token['access_token'],
+                    'permissions': at.scope.split(' '),
                     'email': ut.email 
                 }
+
                 return dict_view(user)
             return dict_view({'permissions': [], 'name': '', 'email': ''})
-
-
-
 
     

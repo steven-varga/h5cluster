@@ -9,9 +9,10 @@ import textwrap
 import os
 import sys
 from logging import info, critical, exception
-from .cmd import register, start, stop, terminate, resume, add, configure, mkfs, mount, umount, status, ssh
+from .cmd import register, start, stop, terminate, resume, add, configure, mkfs, mount, umount, status
 from .conf.parser import ClusterConfigParser
 from .utils import completion
+from auth0.v3.exceptions import Auth0Error
 
 # add new commands here, as well as to `subcommand` section in `main()`
 # prototype of the dispatch function is `func(arguments)`
@@ -24,7 +25,6 @@ dispatch_ = {
     'mkfs': mkfs.dispatch,
     'register': register.dispatch,
     }
-
 
 def main():
     # read sections from aws ec2 configuration files to build the context
@@ -43,7 +43,6 @@ def main():
         epilog="Copyright © <2019-2020> Varga Consulting, Toronto, ON      info@vargaconsulting.ca",
         formatter_class=RawTextHelpFormatter)
     subparsers = parser.add_subparsers(title='commands', dest='cmd', help='additional help')
-    
     
     # sub command sections are listed here, each of them attached to the same completion engine
     start.subparser(subparsers, completer)

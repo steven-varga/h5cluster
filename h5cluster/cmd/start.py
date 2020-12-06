@@ -1,20 +1,12 @@
-# _____________________________________________________________________________
-# NOTICE:   All  information  contained  herein is, and remains the property of
-# Varga Consulting and  its suppliers, if  any. The intellectual and  technical
-# concepts  contained  herein  are  proprietary  to  Varga Consulting  and  its
-# suppliers and may be covered  by  Canadian  and  Foreign Patents, patents  in
-# process, and are protected by trade secret or copyright law. Dissemination of
-# this  information or reproduction of  this material is strictly forbidden un-
-# less prior written permission is obtained from Varga Consulting.
-#
+
 # Copyright © <2019-2020> Varga Consulting, Toronto, ON info@vargaconsulting.ca
-# _____________________________________________________________________________
 
 from logging import info, warning, critical
 import json
 from ..auth.rights import protect
+from ..utils import api
 
-@protect('create:cluster')
+@protect('cluster:create')
 def subparser(subparsers, completer):
     start_parser = subparsers.add_parser("start", help='create/start cluster with given properties')
     start_parser.add_argument(
@@ -65,10 +57,10 @@ def subparser(subparsers, completer):
 
 # called from `cli.py` with parsed arguments, where nodes, volumes, services are converted to 
 # objects, See `parser.py` for details
-@protect('create:cluster')
+@protect('cluster:create')
 def dispatch(**kwargs):
     info('--------------------------------------------------------------------------------')
     info('                           STARTING H5CLUSTER                                   ')
     info('--------------------------------------------------------------------------------')
 
-
+    api.create(kwargs)

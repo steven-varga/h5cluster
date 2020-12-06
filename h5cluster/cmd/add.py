@@ -1,21 +1,10 @@
-# ALL RIGHTS RESERVED.
-# _____________________________________________________________________________
-# NOTICE:   All  information  contained  herein is, and remains the property of
-# Varga Consulting and  its suppliers, if  any. The intellectual and  technical
-# concepts  contained  herein  are  proprietary  to  Varga Consulting  and  its
-# suppliers and may be covered  by  Canadian  and  Foreign Patents, patents  in
-# process, and are protected by trade secret or copyright law. Dissemination of
-# this  information or reproduction of  this material is strictly forbidden un-
-# less prior written permission is obtained from Varga Consulting.
-#
-# Copyright © <2019> Varga Consulting, Toronto, On      info@vargaconsulting.ca
-# _____________________________________________________________________________
+# Copyright © <2019-2020> Varga Consulting, Toronto, On      info@vargaconsulting.ca
 
 from logging import info, critical, warning
 import boto3
 from ..auth.rights import protect
 
-@protect('update:cluster')
+@protect('cluster:update')
 def subparser(subparsers, completer):
     add_parser = subparsers.add_parser("add", help='add nodes to existing cluster')
     add_parser.add_argument(
@@ -46,6 +35,6 @@ def subparser(subparsers, completer):
                             help='skips configuring cluster, use it with heterogeneous nodes')
     add_parser.set_defaults(configure=True)
 
-@protect('update:cluster')
+@protect('cluster:update')
 def dispatch(**kwargs):
     print(kwargs)

@@ -3,7 +3,7 @@
 from logging import info, warning, critical, error
 from ..auth.rights import protect
 
-@protect('update:cluster')
+@protect('cluster:update')
 def subparser(subparsers, completer):
     configure_parser = subparsers.add_parser("configure", help='(re)configures a running cluster')
     configure_parser.add_argument(
@@ -12,7 +12,7 @@ def subparser(subparsers, completer):
     configure_parser.add_argument(
         "--dry-run",  action='store_true', help="do test run, skips instantiating nodes...")
 
-@protect('update:cluster')
+@protect('cluster:update')
 def dispatch(**kwargs):
     info('--------------------------------------------------------------------------------')
     info('                        CONFIGURING H5CLUSTER                                ')

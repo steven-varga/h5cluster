@@ -6,7 +6,7 @@ from ..auth.rights import protect
 
 
 #NOTICE: flags (true/false) don't use 'true_store' instead must be left empty, and let the parser merge values from default_dict or `.aws/config` 
-@protect('mkfs:s3')
+@protect('s3:mkfs')
 def subparser(subparsers, completer):
     parser = subparsers.add_parser("mkfs", help='creates and formats volumes: ebs, s3block, pvfs')
     sp = parser.add_subparsers(title='subparser', dest='sub_cmd', help='additional help')
@@ -65,6 +65,6 @@ def pvfs(node): pass
 _dispatch_ = {
     }
 
-@protect('mkfs:s3')
+@protect('s3:mkfs')
 def dispatch(**kwargs):
     print(**kwargs)

@@ -6,6 +6,7 @@ from configparser import SafeConfigParser, Error, NoSectionError, NoOptionError,
 import re
 from inflection import camelize, underscore
 import importlib
+from ..utils.view import dict_view as dictionary_view
 
 class ClusterConfigParser(SafeConfigParser):
     # list all default arguments in this dictionary, as it serves as fallback mechanism from
@@ -90,7 +91,7 @@ class ClusterConfigParser(SafeConfigParser):
             v.group, v.size = name, int(v.size)
             # convert comma separated strings to list of objects:
             v.volumes, v.services = self.volumes(v.volumes), self.services(v.services)
-            nodes_.append(Node(**args))
+            nodes_.append(args)
         return nodes_
 
     def dispatch(self, dict_name, uri):
@@ -118,9 +119,7 @@ class ClusterConfigParser(SafeConfigParser):
                     args[k] = ' '.join(v.split()) 
                 # configuration file (stored as dictionary)
                 args['type'], args['name'] = type_, name_ # augment the arguments with `name_` prop
-                #delegate to `module.class` objects
-                module = importlib.import_module('cluster.aws.' + dict_name)
-                return getattr(module, camelize(type_))(**args)
+                return args
             except KeyError as err:
                 error('syntax error in configuration file: `' +  str(err)
                          +'` not specified in section `' + uri + '`')
